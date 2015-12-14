@@ -10,21 +10,24 @@ style="border:1px solid #000000;">
 //Room for 25 squares across and down at 20 pixel wide squares
 var canvas = document.getElementById("gridCanvas");
 var ctx = canvas.getContext("2d");
-ctx.fillStyle = "#FF0000";
-ctx.fillRect(0,0,20,20);
-drawSquare(100,100,20);
+ctx.fillStyle = "#440044";
+strokeSquare(100,0,20);
+fillSquare(120,0,20);
+fillSquare(100,20,20);
+consecutiveRowSquares(6,10,2);
 
-function drawSquare(x, y, d) {
-    ctx.lineWidth = 1;
-    ctx.moveTo(x, y);
-    ctx.lineTo(x+d, y);
-    ctx.stroke();
-    ctx.lineTo(x+d, y+d);
-    ctx.stroke();
-    ctx.lineTo(x, y+d);
-    ctx.stroke();
-    ctx.lineTo(x, y);
-    ctx.stroke();
+function consecutiveRowSquares(column, row, count) {
+    for (i=0; i<count; i++) {
+        fillSquare((column+i)*20, row*20, 20);
+    }
+}
+
+function strokeSquare(x, y, length) {
+    ctx.strokeRect(x, y, length, length);
+}
+
+function fillSquare(x, y, length) {
+    ctx.fillRect(x, y, length, length);
 }
 </script>
 
