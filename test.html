@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="gridCanvas" width="523" height="523"
+style="border:1px solid #000000;">
+</canvas>
+
+<script>
+//Room for 25 squares across and down at 20 pixel wide squares
+var canvas = document.getElementById("gridCanvas");
+var ctx = canvas.getContext("2d");
+ctx.fillStyle = "#FF0000";
+ctx.fillRect(0,0,20,20);
+drawSquare(100,100,20);
+
+function drawSquare(x, y, d) {
+    ctx.lineWidth = 1;
+    ctx.moveTo(x, y);
+    ctx.lineTo(x+d, y);
+    ctx.stroke();
+    ctx.lineTo(x+d, y+d);
+    ctx.stroke();
+    ctx.lineTo(x, y+d);
+    ctx.stroke();
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+</script>
+
+</body>
+</html>
+
