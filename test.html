@@ -2,28 +2,57 @@
 <html>
 <body>
 
-<canvas id="gridCanvas" width="523" height="523"
+<!-- 
+    Room for 25 squares across and down at 20 pixel wide squares
+    plus 26 gridlines (1 pixel wide) (internal and external)
+-->
+<canvas id="gridCanvas" width="526" height="526"
 style="border:1px solid #000000;">
 </canvas>
 
 <script>
-//Room for 25 squares across and down at 20 pixel wide squares
 var canvas = document.getElementById("gridCanvas");
 var ctx = canvas.getContext("2d");
 
 ctx.clearRect(0,0,canvas.width, canvas.height)
-ctx.fillStyle = "#440044";
-
-scoreSet = [2,4, 6];
+ctx.fillStyle = "#dd00dd";
+ctx.lineWidth = 1;
+drawGrid(25,25,20);
+scoreSet = [2,4,1,6];
 column_count = 0;
 for (j=0; j<scoreSet.length; j++) {
-    consecutiveRowSquares(column_count, 10, scoreSet[j]);
+    consecutiveRowSquares(column_count, 1, scoreSet[j]);
     column_count += scoreSet[j]+1;
 }
 
+function assert(condition, message) {
+    if (!condition) {
+        message = message || "Assertion Failure";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        }
+        throw message;
+    }
+}
+
+function drawGrid(cols, rows, cell_dimension) {
+    assert(cols*cell_dimension+cols+1 <= canvas.width);
+    assert(rows*cell_dimension+rows+1 <= canvas.height);
+    for (vline=0; vline<=cols; vline++) {
+        ctx.moveTo(0.5+vline*(cell_dimension+1), 0);
+        ctx.lineTo(0.5+vline*(cell_dimension+1), canvas.height);
+        ctx.stroke();
+    }
+    for (hline=0; hline<=rows; hline++) {
+        ctx.moveTo(0, 0.5+hline*(cell_dimension+1));
+        ctx.lineTo(canvas.width, 0.5+hline*(cell_dimension+1));
+        ctx.stroke();
+    }
+}
+    
 function consecutiveRowSquares(column, row, count) {
     for (i=0; i<count; i++) {
-        fillSquare((column+i)*20, row*20, 20);
+        fillSquare(column+i, row);
     }
 }
 
@@ -31,8 +60,8 @@ function strokeSquare(x, y, length) {
     ctx.strokeRect(x, y, length, length);
 }
 
-function fillSquare(x, y, length) {
-    ctx.fillRect(x, y, length, length);
+function fillSquare(col, row) {
+    ctx.fillRect(0.5+21*(col-1), 0.5+21*(row-1), 20.5, 20.5);
 }
 </script>
 
