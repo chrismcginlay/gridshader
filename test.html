@@ -13,16 +13,33 @@ style="border:1px solid #000000;">
 <script>
 var canvas = document.getElementById("gridCanvas");
 var ctx = canvas.getContext("2d");
+var column_count = 0;
+
+//Array index 0 is row 1.
+var initialHorizontalSet = [
+    [2,4,1,6],
+    [1,1,1,1,1,1],
+    [5,2,4,1]
+];
+var scoreSet = null;
+var numRows = initialHorizontalSet.length;
+
 
 ctx.clearRect(0,0,canvas.width, canvas.height)
 ctx.fillStyle = "#dd00dd";
 ctx.lineWidth = 1;
 drawGrid(25,25,20);
-scoreSet = [2,4,1,6];
-column_count = 0;
-for (j=0; j<scoreSet.length; j++) {
-    consecutiveRowSquares(column_count, 1, scoreSet[j]);
-    column_count += scoreSet[j]+1;
+populateGrid();
+
+function populateGrid() {
+    for (var row=0; row<25; row++) {
+        scoreSet = initialHorizontalSet[row];
+        column_count = 0
+        for (j=0; j<scoreSet.length; j++) {
+            consecutiveRowSquares(column_count, row+1, scoreSet[j]);
+            column_count += scoreSet[j]+1;
+        }
+    }
 }
 
 function assert(condition, message) {
@@ -38,12 +55,12 @@ function assert(condition, message) {
 function drawGrid(cols, rows, cell_dimension) {
     assert(cols*cell_dimension+cols+1 <= canvas.width);
     assert(rows*cell_dimension+rows+1 <= canvas.height);
-    for (vline=0; vline<=cols; vline++) {
+    for (var vline=0; vline<=cols; vline++) {
         ctx.moveTo(0.5+vline*(cell_dimension+1), 0);
         ctx.lineTo(0.5+vline*(cell_dimension+1), canvas.height);
         ctx.stroke();
     }
-    for (hline=0; hline<=rows; hline++) {
+    for (var hline=0; hline<=rows; hline++) {
         ctx.moveTo(0, 0.5+hline*(cell_dimension+1));
         ctx.lineTo(canvas.width, 0.5+hline*(cell_dimension+1));
         ctx.stroke();
@@ -51,7 +68,7 @@ function drawGrid(cols, rows, cell_dimension) {
 }
     
 function consecutiveRowSquares(column, row, count) {
-    for (i=0; i<count; i++) {
+    for (var i=0; i<count; i++) {
         fillSquare(column+i, row);
     }
 }
