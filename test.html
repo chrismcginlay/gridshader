@@ -15,15 +15,14 @@ var canvas = document.getElementById("gridCanvas");
 var ctx = canvas.getContext("2d");
 var column_count = 0;
 
-//Array index 0 is row 1.
+//Array index 0 is row 1 of the gridshading puzzle.
 var initialHorizontalSet = [
     [2,4,1,6],
     [1,1,1,1,1,1],
     [5,2,4,1]
 ];
-var scoreSet = null;
+var consecutiveBlockStartsHorizontal = [];
 var numRows = initialHorizontalSet.length;
-
 
 ctx.clearRect(0,0,canvas.width, canvas.height)
 ctx.fillStyle = "#dd00dd";
@@ -33,14 +32,17 @@ populateGrid();
 
 function populateGrid() {
     for (var row=0; row<25; row++) {
-        scoreSet = initialHorizontalSet[row];
-        column_count = 0
-        for (j=0; j<scoreSet.length; j++) {
+        var scoreSet = initialHorizontalSet[row];
+        consecutiveBlockStartsHorizontal[row] = [];
+        column_count = 1;
+        for (var j=0; j<scoreSet.length; j++) {
             consecutiveRowSquares(column_count, row+1, scoreSet[j]);
+            consecutiveBlockStartsHorizontal[row].push(column_count);
             column_count += scoreSet[j]+1;
         }
     }
 }
+
 
 function assert(condition, message) {
     if (!condition) {
@@ -68,6 +70,8 @@ function drawGrid(cols, rows, cell_dimension) {
 }
     
 function consecutiveRowSquares(column, row, count) {
+    assert(row<=25);
+    assert(column+count<25+1);
     for (var i=0; i<count; i++) {
         fillSquare(column+i, row);
     }
