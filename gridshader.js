@@ -14,6 +14,10 @@ function assert(condition, message) {
     }
 }
 
+function init() {
+    drawGrid();
+}
+
 function drawGrid() {
     canvas = document.getElementById('layer-bg-grid');
     assert(canvas.width==pixelWidth,"Canvas has wrong width");
