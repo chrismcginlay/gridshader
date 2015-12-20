@@ -1,0 +1,23 @@
+#gridarea {
+    width:  526px;
+    height: 526px;
+    position:   relative;
+    border:     2px solid black;
+}
+
+canvas {
+    position:   absolute;
+}
+
+#layer-ui {
+    z-index:    3;
+}
+
+#layer-blocks {
+    z-index:    2;
+}
+
+#layer-bg-grid {
+    z-index:    1;
+}
+
