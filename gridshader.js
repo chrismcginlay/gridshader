@@ -17,8 +17,8 @@ function assert(condition, message) {
 
 function fillSquareAtRC(context, r, c) {
     //Shade square at row=r, column=c
-    var x = 0.5+(blockDimension+gridPixels)*(c-1); //top left x-co-ord
-    var y = 0.5+(blockDimension+gridPixels)*(r-1); //top left y-co-ord
+    var x = 0.5+(blockDimension+gridPixels)*c; //top left x-co-ord
+    var y = 0.5+(blockDimension+gridPixels)*r; //top left y-co-ord
     context.fillRect(x, y, blockDimension, blockDimension);
 }
 
@@ -31,7 +31,8 @@ function init() {
 function loadBlockData() {
     //Load the initial sequence of horizontal consecutive squares
     //Place the blocks hard to the left, with an empty square between each.
-   
+
+    var blockLength = 0; //length of consecutive shaded squares   
     var initialData = [
         [7,3,1,1,7],
         [1,1,2,2,1,1]
@@ -46,11 +47,11 @@ function loadBlockData() {
             for (var k=0; k<blockLength; k++) {
                 gridShade[i][track_column+k] = 1;   //shade
             } 
-            gridShade[i][blockLength] = 0;  //whitespace
+            gridShade[i][track_column+blockLength] = 0;  //whitespace after block
             track_column += blockLength+1;
-            for (var k=track_column; k<gridSize; k++) {
-                gridShade[i][k] = 0;    //whitespace to end of row
-            }
+        }
+        for (var k=track_column; k<gridSize; k++) {
+            gridShade[i][k] = 0;    //whitespace to end of row
         }
     }
     for (var i=initialData.length; i<gridSize; i++) {
@@ -94,7 +95,7 @@ function drawShadedCells() {
         ctx = canvas.getContext('2d');
         for (var i=0; i<gridSize; i++) {
             for (var j=0; j<gridSize; j++) {
-                console.log(i,j,"n");
+                //console.log(i,j,gridShade[i][j]);
                 if (gridShade[i][j]==1) {
                     fillSquareAtRC(ctx, i, j);
                 }
