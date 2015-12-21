@@ -53,6 +53,13 @@ function loadBlockData() {
             }
         }
     }
+    for (var i=initialData.length; i<gridSize; i++) {
+        gridShade[i] = [];
+        for (var k=0; k<gridSize; k++) {
+            gridShade[i][k] = 0;    //whitespace remaining rows
+        }
+    }
+
     //console.log(JSON.stringify(gridShade));
 }
 
@@ -90,7 +97,6 @@ function drawShadedCells() {
                 console.log(i,j,"n");
                 if (gridShade[i][j]==1) {
                     fillSquareAtRC(ctx, i, j);
-                    alert("Ready to fill square");
                 }
             }
         }
