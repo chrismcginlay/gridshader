@@ -15,9 +15,17 @@ function assert(condition, message) {
     }
 }
 
+function fillSquareAtRC(context, r, c) {
+    //Shade square at row=r, column=c
+    var x = 0.5+(blockDimension+gridPixels)*(c-1); //top left x-co-ord
+    var y = 0.5+(blockDimension+gridPixels)*(r-1); //top left y-co-ord
+    context.fillRect(x, y, blockDimension, blockDimension);
+}
+
 function init() {
     loadBlockData();
     drawGrid();
+    drawShadedCells();
 }
 
 function loadBlockData() {
@@ -65,5 +73,26 @@ function drawGrid() {
             ctx.lineTo(pixelWidth, 0.5+hline*(blockDimension+1));
         }
         ctx.stroke();
+    }
+}
+
+function drawShadedCells() {
+    //using gridShade array, draw the pattern of squares, thus showing blocks
+
+    canvas = document.getElementById('layer-blocks');
+    assert(canvas.width==pixelWidth,"Canvas has wrong width");
+    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+
+    if (canvas.getContext) {
+        ctx = canvas.getContext('2d');
+        for (var i=0; i<gridSize; i++) {
+            for (var j=0; j<gridSize; j++) {
+                console.log(i,j,"n");
+                if (gridShade[i][j]==1) {
+                    fillSquareAtRC(ctx, i, j);
+                    alert("Ready to fill square");
+                }
+            }
+        }
     }
 }
