@@ -3,6 +3,7 @@ var gridSize = 25;          //number of blocks across and down in grid
 var gridPixels = 1;         //pixel width of gridlines
 // pixelWidth - linear number of pixels required to render grid
 var pixelWidth = blockDimension*gridSize+gridPixels*(gridSize+1);
+var gridShade = []; //[row,column] shading data
 
 function assert(condition, message) {
     if (!condition) {
@@ -15,7 +16,36 @@ function assert(condition, message) {
 }
 
 function init() {
+    loadBlockData();
     drawGrid();
+}
+
+function loadBlockData() {
+    //Load the initial sequence of horizontal consecutive squares
+    //Place the blocks hard to the left, with an empty square between each.
+   
+    var initialData = [
+        [7,3,1,1,7],
+        [1,1,2,2,1,1]
+    ];
+
+    for (var i=0; i<initialData.length; i++) {
+        var rowData = initialData[i];
+        gridShade[i] = [];
+        var track_column = 0; //track cumulative position as building up row
+        for (var j=0; j<rowData.length; j++) {
+            blockLength = rowData[j];
+            for (var k=0; k<blockLength; k++) {
+                gridShade[i][track_column+k] = 1;   //shade
+            } 
+            gridShade[i][blockLength] = 0;  //whitespace
+            track_column += blockLength+1;
+            for (var k=track_column; k<gridSize; k++) {
+                gridShade[i][k] = 0;    //whitespace to end of row
+            }
+        }
+    }
+    //console.log(JSON.stringify(gridShade));
 }
 
 function drawGrid() {
