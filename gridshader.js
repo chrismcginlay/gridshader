@@ -4,6 +4,12 @@ var gridPixels = 1;         //pixel width of gridlines
 // pixelWidth - linear number of pixels required to render grid
 var pixelWidth = blockDimension*gridSize+gridPixels*(gridSize+1);
 var gridShade = []; //[row,column] shading data
+var ui_canvas = document.getElementById('layer-ui');
+assert(ui_canvas.width==pixelWidth,"Canvas has wrong width");
+assert(ui_canvas.height==pixelWidth, "Canvas has wrong height");
+if (ui_canvas.getContext) {
+    var ui_ctx = ui_canvas.getContext('2d');
+}
 
 function assert(condition, message) {
     if (!condition) {
@@ -26,6 +32,23 @@ function init() {
     loadBlockData();
     drawGrid();
     drawShadedCells();
+    cursor.draw(ui_ctx);
+}
+
+var cursor = {
+    r: 0,
+    c: 0,
+    length: 1,
+    colour: 'blue',
+    draw: function(ctx) {
+        var x = 0.5+(blockDimension+gridPixels)*this.c; //top left x-co-ord
+        var y = 0.5+(blockDimension+gridPixels)*this.r; //top left y-co-ord
+        ctx.save();
+        ctx.strokeStyle = 'rgb(0,100,100)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x, y, blockDimension*this.length+1, blockDimension+1);
+        ctx.restore();
+    }
 }
 
 function loadBlockData() {
