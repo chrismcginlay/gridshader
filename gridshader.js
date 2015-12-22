@@ -19,7 +19,7 @@ function fillSquareAtRC(context, r, c) {
     //Shade square at row=r, column=c
     var x = 0.5+(blockDimension+gridPixels)*c; //top left x-co-ord
     var y = 0.5+(blockDimension+gridPixels)*r; //top left y-co-ord
-    context.fillRect(x, y, blockDimension, blockDimension);
+    context.fillRect(x, y, blockDimension+0.5, blockDimension+0.5);
 }
 
 function init() {
@@ -116,6 +116,8 @@ function drawShadedCells() {
 
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.fillStyle = 'rgba(200,0,200,0.5)';
         for (var i=0; i<gridSize; i++) {
             for (var j=0; j<gridSize; j++) {
                 //console.log(i,j,gridShade[i][j]);
@@ -124,5 +126,6 @@ function drawShadedCells() {
                 }
             }
         }
+        ctx.restore();
     }
 }
