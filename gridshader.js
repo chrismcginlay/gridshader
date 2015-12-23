@@ -51,6 +51,15 @@ var cursor = {
     }
 }
 
+ui_canvas.addEventListener("click", function(e) {
+    var x = e.clientX;
+    var y = e.clientY;
+    var boundary = this.getBoundingClientRect();
+    cursor.c = (x-boundary.left)/(blockDimension+gridPixels);
+    cursor.r = (y-boundary.top)/(blockDimension+gridPixels);
+    cursor.draw(ui_ctx);
+});
+
 function loadBlockData() {
     //Load the initial sequence of horizontal consecutive squares
     //Place the blocks hard to the left, with an empty square between each.
