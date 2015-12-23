@@ -71,10 +71,40 @@ ui_canvas.addEventListener("click", function(e) {
     var y = e.clientY;
     var boundary = this.getBoundingClientRect();
     cursor.clear(ui_ctx);   //clear old cursor
-    cursor.c = Math.floor((x-boundary.left)/(blockDimension+gridPixels));
-    cursor.r = Math.floor((y-boundary.top)/(blockDimension+gridPixels));
+    findCursorStart(x,y)
     cursor.draw(ui_ctx);
 });
+
+function findCursorStart(x,y) {
+    var canvas_boundary = ui_canvas.getBoundingClientRect();
+    var current_column = Math.floor
+        ((x-canvas_boundary.left)/(blockDimension+gridPixels));
+    cursor.r = Math.floor
+        ((y-canvas_boundary.top)/(blockDimension+gridPixels));
+
+    var test = gridShade[1][2];
+    if (current_column==0) { 
+        cursor.c = current_column;
+        return;
+    }
+    if (gridShade[cursor.r][current_column] == 0) {
+        //we aren't on a shaded cell
+        cursor.c = current_column;
+    } else {
+        while (current_column>0) {
+            if (gridShade[cursor.r][current_column-1] == 1) {
+                current_column -= 1;
+                if (current_column==0) {
+                    cursor.c = current_column;
+                    break;
+                }
+            } else {
+                cursor.c = current_column;
+                break;
+            }
+        }
+    }
+}
 
 function computeCursorLength(cursor) {
     //
