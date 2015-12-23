@@ -71,7 +71,8 @@ ui_canvas.addEventListener("click", function(e) {
     var y = e.clientY;
     var boundary = this.getBoundingClientRect();
     cursor.clear(ui_ctx);   //clear old cursor
-    findCursorStart(x,y)
+    findCursorStart(x,y);
+    findCursorLength();
     cursor.draw(ui_ctx);
 });
 
@@ -106,8 +107,23 @@ function findCursorStart(x,y) {
     }
 }
 
-function computeCursorLength(cursor) {
-    //
+function findCursorLength() {
+    //Assumes cursor is placed at block start (per findCursorStart)
+    if (gridShade[cursor.r][cursor.c] == 0) {
+        cursor.length = 1; //Just whitespace, not a block
+        return;
+    }
+
+    var cl = 0;
+    var column_to_test = cursor.c;
+    do {
+        if (gridShade[cursor.r][column_to_test] == 1) {
+            cl++;
+            column_to_test++;
+        } else break;
+    } while (column_to_test<25);
+    cursor.length = cl;
+    return;
 }
 
 function loadBlockData() {
