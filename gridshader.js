@@ -48,7 +48,11 @@ var cursor = {
         ctx.save();
         ctx.strokeStyle = 'rgb(0,100,100)';
         ctx.lineWidth = cursorLineWidth;
-        ctx.strokeRect(x, y, blockDimension*this.length+1, blockDimension+1);
+        ctx.strokeRect(
+            x, y, 
+            (blockDimension+gridPixels)*this.length,
+            (blockDimension+gridPixels)
+        );
         ctx.restore();
     },
     clear: function(ctx) {
@@ -60,8 +64,8 @@ var cursor = {
         ctx.clearRect(
             x-clearance, 
             y-clearance, 
-            blockDimension*this.length+2*clearance, 
-            blockDimension+2*clearance
+            (blockDimension+gridPixels)*this.length+2*clearance, 
+            (blockDimension+gridPixels)+2*clearance
         );
     }
 }
