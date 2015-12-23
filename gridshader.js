@@ -55,10 +55,14 @@ ui_canvas.addEventListener("click", function(e) {
     var x = e.clientX;
     var y = e.clientY;
     var boundary = this.getBoundingClientRect();
-    cursor.c = (x-boundary.left)/(blockDimension+gridPixels);
-    cursor.r = (y-boundary.top)/(blockDimension+gridPixels);
+    cursor.c = Math.floor((x-boundary.left)/(blockDimension+gridPixels));
+    cursor.r = Math.floor((y-boundary.top)/(blockDimension+gridPixels));
     cursor.draw(ui_ctx);
 });
+
+function computeCursorLength(cursor) {
+    //
+}
 
 function loadBlockData() {
     //Load the initial sequence of horizontal consecutive squares
