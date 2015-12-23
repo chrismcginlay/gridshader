@@ -5,6 +5,8 @@ var gridPixels = 1;         //pixel width of gridlines
 var pixelWidth = blockDimension*gridSize+gridPixels*(gridSize+1);
 var gridShade = []; //[row,column] shading data
 var ui_canvas = document.getElementById('layer-ui');
+var cursorLineWidth = 3;
+
 assert(ui_canvas.width==pixelWidth,"Canvas has wrong width");
 assert(ui_canvas.height==pixelWidth, "Canvas has wrong height");
 if (ui_canvas.getContext) {
@@ -45,9 +47,22 @@ var cursor = {
         var y = 0.5+(blockDimension+gridPixels)*this.r; //top left y-co-ord
         ctx.save();
         ctx.strokeStyle = 'rgb(0,100,100)';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = cursorLineWidth;
         ctx.strokeRect(x, y, blockDimension*this.length+1, blockDimension+1);
         ctx.restore();
+    },
+    clear: function(ctx) {
+        var x = 0.5+(blockDimension+gridPixels)*this.c; //top left x-co-ord
+        var y = 0.5+(blockDimension+gridPixels)*this.r; //top left y-co-ord
+        //clear cursor rectangle plus extra pixel width 
+        //in case of half-integer cursor pos
+        var clearance = cursorLineWidth/2 + 1;
+        ctx.clearRect(
+            x-clearance, 
+            y-clearance, 
+            blockDimension*this.length+2*clearance, 
+            blockDimension+2*clearance
+        );
     }
 }
 
@@ -55,6 +70,7 @@ ui_canvas.addEventListener("click", function(e) {
     var x = e.clientX;
     var y = e.clientY;
     var boundary = this.getBoundingClientRect();
+    cursor.clear(ui_ctx);   //clear old cursor
     cursor.c = Math.floor((x-boundary.left)/(blockDimension+gridPixels));
     cursor.r = Math.floor((y-boundary.top)/(blockDimension+gridPixels));
     cursor.draw(ui_ctx);
