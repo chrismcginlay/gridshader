@@ -42,6 +42,7 @@ var cursor = {
     c: 0,
     length: 1,
     colour: 'blue',
+    dragging: false,
     draw: function(ctx) {
         var x = 0.5+(blockDimension+gridPixels)*this.c; //top left x-co-ord
         var y = 0.5+(blockDimension+gridPixels)*this.r; //top left y-co-ord
@@ -70,22 +71,38 @@ var cursor = {
     }
 }
 
-ui_canvas.addEventListener("click", function(e) {
+ui_canvas.addEventListener("mousedown", function(e) {
     var x = e.clientX;
     var y = e.clientY;
     var boundary = this.getBoundingClientRect();
     cursor.clear(ui_ctx);   //clear old cursor
-    findCursorStart(x,y);
+    var c = x2c(x);
+    var r = y2r(y);
+    findCursorStart(r,c);
     findCursorLength();
     cursor.draw(ui_ctx);
+    cursor.dragging = (gridShade[r][c] == 1); 
 });
 
-function findCursorStart(x,y) {
+function x2c(x) {
+    //Convert window (x,-) to grid (-,column).
     var canvas_boundary = ui_canvas.getBoundingClientRect();
-    var current_column = Math.floor
+    var column = Math.floor
         ((x-canvas_boundary.left)/(blockDimension+gridPixels));
-    cursor.r = Math.floor
+    return column;
+}
+
+function y2r(y) {
+    //Convert window (-,y) to grid (row, -).
+    var canvas_boundary = ui_canvas.getBoundingClientRect();
+    var row = Math.floor
         ((y-canvas_boundary.top)/(blockDimension+gridPixels));
+    return row;
+}
+    
+function findCursorStart(r,c) {
+    var current_column = c;
+    cursor.r = r;
 
     var test = gridShade[1][2];
     if (current_column==0) { 
