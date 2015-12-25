@@ -88,6 +88,20 @@ ui_canvas.addEventListener("mouseup", function(e) {
     cursor.dragging = false;
 });
 
+ui_canvas.addEventListener("mousemove", function(e) {
+    if (cursor.dragging) {
+        var x = e.clientX;
+        var y = e.clientY;
+        var boundary = this.getBoundingClientRect();
+        cursor.clear(ui_ctx);   //clear old cursor
+        var c = x2c(x);
+        var r = y2r(y);
+        cursor.c = c;
+        //cursor.r is fixed. Makes no sense to drag up/down
+        cursor.draw(ui_ctx);
+    }
+});
+
 function x2c(x) {
     //Convert window (x,-) to grid (-,column).
     var canvas_boundary = ui_canvas.getBoundingClientRect();
