@@ -84,6 +84,10 @@ ui_canvas.addEventListener("mousedown", function(e) {
     cursor.dragging = (gridShade[r][c] == 1); 
 });
 
+ui_canvas.addEventListener("mouseup", function(e) {
+    cursor.dragging = false;
+});
+
 function x2c(x) {
     //Convert window (x,-) to grid (-,column).
     var canvas_boundary = ui_canvas.getBoundingClientRect();
