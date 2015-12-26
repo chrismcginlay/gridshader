@@ -46,15 +46,11 @@ var cursor = {
     draw: function(ctx) {
         var x = 0.5+(blockDimension+gridPixels)*this.c; //top left x-co-ord
         var y = 0.5+(blockDimension+gridPixels)*this.r; //top left y-co-ord
-        ctx.save();
-        ctx.strokeStyle = 'rgb(0,100,100)';
-        ctx.lineWidth = cursorLineWidth;
         ctx.strokeRect(
             x, y, 
             (blockDimension+gridPixels)*this.length,
             (blockDimension+gridPixels)
         );
-        ctx.restore();
     },
     clear: function(ctx) {
         var x = 0.5+(blockDimension+gridPixels)*this.c; //top left x-co-ord
@@ -80,8 +76,14 @@ ui_canvas.addEventListener("mousedown", function(e) {
     var r = y2r(y);
     findCursorStart(r,c);
     findCursorLength();
-    cursor.draw(ui_ctx);
     cursor.dragging = (gridShade[r][c] == 1); 
+    var lspace = findSpaceToLeft();
+    var rspace = findSpaceToRight();
+    ui_ctx.save();
+    ui_ctx.strokeStyle = 'rgb(0,100,100)';
+    ui_ctx.lineWidth = cursorLineWidth;
+    cursor.draw(ui_ctx);
+    ctx.restore();
 });
 
 ui_canvas.addEventListener("mouseup", function(e) {
@@ -98,7 +100,11 @@ ui_canvas.addEventListener("mousemove", function(e) {
         var r = y2r(y);
         cursor.c = c;
         //cursor.r is fixed. Makes no sense to drag up/down
+        ui_ctx.save();
+        ui_ctx.strokeStyle = 'rgb(150,0,0)';
+        ui_ctx.lineWidth = cursorLineWidth;
         cursor.draw(ui_ctx);
+        ui_ctx.restore();
     }
 });
 
@@ -165,6 +171,32 @@ function findCursorLength() {
     return;
 }
 
+function findSpaceToLeft() {
+    //Should the cursor be dragging a block, how many spaces are to its left
+    var free_to_left = 0;
+    if (cursor.dragging) {
+        var test_column = cursor.c-1;
+        while (test_column>0 && (gridShade[cursor.r][test_column] == 0)) {
+            test_column--;
+            free_to_left++;
+        }
+    } 
+    return free_to_left;
+}
+
+function findSpaceToRight() {
+    //Should the cursor be dragging a block, how many spaces are to its right
+    var free_to_right = 0;
+    if (cursor.dragging) {
+        var test_column = cursor.c+cursor.length;
+        while (test_column<25 && (gridShade[cursor.r][test_column] == 0)) {
+            test_column++;
+            free_to_right++;
+        }
+    }
+    return free_to_right;
+}
+    
 function loadBlockData() {
     //Load the initial sequence of horizontal consecutive squares
     //Place the blocks hard to the left, with an empty square between each.
