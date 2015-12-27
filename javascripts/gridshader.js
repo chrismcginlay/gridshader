@@ -97,7 +97,15 @@ ui_canvas.addEventListener("mousedown", function(e) {
     ctx.restore();
 });
 
+ui_canvas.addEventListener("mouseout", function(e) {
+    cursor.dragging = false;
+    cursor.draw(ui_ctx);
+});
+
 ui_canvas.addEventListener("mouseup", function(e) {
+    if (!cursor.dragging) {
+        return;
+    }
     cursor.dragging = false;
     for (var i=0; i<cursor.length; i++) {
         gridShade[cursor.r][cursor.c_old+i] = 0;
@@ -239,7 +247,7 @@ function findSpaceToRight() {
     }
     return free_to_right;
 }
-    
+
 function loadBlockData() {
     //Load the initial sequence of horizontal consecutive squares
     //Place the blocks hard to the left, with an empty square between each.
@@ -372,3 +380,22 @@ function drawShadedCells() {
         ctx.restore();
     }
 }
+
+function computeColumnBlocks() {
+    var columnData = [];
+    // i iterates over columns, j over rows.
+    // Cf. gridShade[r][c]
+    for (i=0; i<gridSize; i++) {
+        columnData[i] = [];
+        var count = 0;
+        for(j=0; j<gridSize; j++) {
+            if (gridShade[j][i] == 1) {
+                count++;
+            } else if (count>0) {
+                columnData[i].push(count);
+                count = 0;
+            }
+        }
+    }
+}              
+ 
