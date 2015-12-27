@@ -40,6 +40,7 @@ function init() {
 var cursor = {
     r: 0,
     c: 0,
+    c_old: 0, //record block start column at start of any dragging operation
     length: 1,
     colour: 'blue',
     dragging: false,
@@ -77,6 +78,7 @@ ui_canvas.addEventListener("mousedown", function(e) {
     var c = x2c(x);
     var r = y2r(y);
     findCursorStart(r,c);
+    cursor.c_old = cursor.c;    //record start of this block
     findCursorLength();
     cursor.dragging = (gridShade[r][c] == 1); 
     cursor.dragLimitLow = cursor.c - findSpaceToLeft(); //no further left
@@ -90,6 +92,13 @@ ui_canvas.addEventListener("mousedown", function(e) {
 
 ui_canvas.addEventListener("mouseup", function(e) {
     cursor.dragging = false;
+    for (var i=0; i<cursor.length; i++) {
+        gridShade[cursor.r][cursor.c_old+i] = 0;
+    }
+    for (var i=0; i<cursor.length; i++) {
+        gridShade[cursor.r][cursor.c+i] = 1;
+    }
+    drawShadedCells();
 });
 
 ui_canvas.addEventListener("mousemove", function(e) {
