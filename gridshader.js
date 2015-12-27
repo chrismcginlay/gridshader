@@ -30,6 +30,13 @@ function fillSquareAtRC(context, r, c) {
     context.fillRect(x, y, blockDimension+0.5, blockDimension+0.5);
 }
 
+function clearSquareAtRC(context, r, c) {
+    //clear square at row=r, column=c
+    var x = 0.5+(blockDimension+gridPixels)*c; //top left x-co-ord
+    var y = 0.5+(blockDimension+gridPixels)*r; //top left y-co-ord
+    context.clearRect(x, y, blockDimension+0.5, blockDimension+0.5);
+}
+
 function init() {
     loadBlockData();
     drawGrid();
@@ -98,7 +105,8 @@ ui_canvas.addEventListener("mouseup", function(e) {
     for (var i=0; i<cursor.length; i++) {
         gridShade[cursor.r][cursor.c+i] = 1;
     }
-    drawShadedCells();
+    clearShadedCellRow(cursor.r);
+    drawShadedCellRow(cursor.r);
 });
 
 ui_canvas.addEventListener("mousemove", function(e) {
@@ -297,6 +305,37 @@ function drawGrid() {
             ctx.lineTo(pixelWidth, 0.5+hline*(blockDimension+1));
         }
         ctx.stroke();
+    }
+}
+
+function drawShadedCellRow(r) {
+    canvas = document.getElementById('layer-blocks');
+    assert(canvas.width==pixelWidth,"Canvas has wrong width");
+    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+
+    if (canvas.getContext) {
+        ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.fillStyle = 'rgba(200,0,200,0.5)';
+        for (var j=0; j<gridSize; j++) {
+            if (gridShade[r][j]==1) {
+                fillSquareAtRC(ctx, r, j);
+            }
+        }
+        ctx.restore();
+    }
+}
+
+function clearShadedCellRow(r) {
+    canvas = document.getElementById('layer-blocks');
+    assert(canvas.width==pixelWidth,"Canvas has wrong width");
+    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+
+    if (canvas.getContext) {
+        ctx = canvas.getContext('2d');
+        for (var j=0; j<gridSize; j++) {
+            clearSquareAtRC(ctx, r, j);
+        }
     }
 }
 
