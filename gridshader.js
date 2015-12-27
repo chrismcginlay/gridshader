@@ -43,6 +43,8 @@ var cursor = {
     length: 1,
     colour: 'blue',
     dragging: false,
+    dragLimitLow: 0,            //restrict movement of dragged blocks so as not
+    dragLimitHigh: gridSize,    //to overlap any adjacent blocks.
     draw: function(ctx) {
         var x = 0.5+(blockDimension+gridPixels)*this.c; //top left x-co-ord
         var y = 0.5+(blockDimension+gridPixels)*this.r; //top left y-co-ord
@@ -77,8 +79,8 @@ ui_canvas.addEventListener("mousedown", function(e) {
     findCursorStart(r,c);
     findCursorLength();
     cursor.dragging = (gridShade[r][c] == 1); 
-    var lspace = findSpaceToLeft();
-    var rspace = findSpaceToRight();
+    cursor.dragLimitLow = cursor.c - findSpaceToLeft(); //no further left
+    cursor.dragLimitHigh = cursor.c + findSpaceToRight(); //no further right
     ui_ctx.save();
     ui_ctx.strokeStyle = 'rgb(0,100,100)';
     ui_ctx.lineWidth = cursorLineWidth;
@@ -97,9 +99,11 @@ ui_canvas.addEventListener("mousemove", function(e) {
         var boundary = this.getBoundingClientRect();
         cursor.clear(ui_ctx);   //clear old cursor
         var c = x2c(x);
-        var r = y2r(y);
-        cursor.c = c;
+        //Allow block drag, but avoid adjacent blocks
+        cursor.c = Math.min(
+            cursor.dragLimitHigh, Math.max(cursor.dragLimitLow, c));
         //cursor.r is fixed. Makes no sense to drag up/down
+        //var r = y2r(y);
         ui_ctx.save();
         ui_ctx.strokeStyle = 'rgb(150,0,0)';
         ui_ctx.lineWidth = cursorLineWidth;
@@ -176,9 +180,20 @@ function findSpaceToLeft() {
     var free_to_left = 0;
     if (cursor.dragging) {
         var test_column = cursor.c-1;
-        while (test_column>0 && (gridShade[cursor.r][test_column] == 0)) {
+        while (test_column>=1) {
+            var one_left = gridShade[cursor.r][test_column];
+            var two_left = gridShade[cursor.r][test_column-1];
+            if (one_left == 0 && two_left ==0) {
+                free_to_left++;
+            } else {
+                break;
+            }
             test_column--;
-            free_to_left++;
+        }
+        if (test_column==0) {
+            if (gridShade[cursor.r][test_column]==0) {
+                free_to_left++;
+            }
         }
     } 
     return free_to_left;
