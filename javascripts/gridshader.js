@@ -221,9 +221,20 @@ function findSpaceToRight() {
     var free_to_right = 0;
     if (cursor.dragging) {
         var test_column = cursor.c+cursor.length;
-        while (test_column<25 && (gridShade[cursor.r][test_column] == 0)) {
+        while (test_column<24) {
+            var one_right = gridShade[cursor.r][test_column];
+            var two_right = gridShade[cursor.r][test_column+1];
+            if (one_right == 0 && two_right ==0) {
+                free_to_right++;
+            } else {
+                break;
+            }
             test_column++;
-            free_to_right++;
+        }
+        if (test_column==24) {
+            if (gridShade[cursor.r][test_column]==0) {
+                free_to_right++;
+            }
         }
     }
     return free_to_right;
