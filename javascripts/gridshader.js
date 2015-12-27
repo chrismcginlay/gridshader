@@ -43,6 +43,8 @@ function init() {
     drawGrid();
     drawShadedCells();
     cursor.draw(ui_ctx);
+    computeColumnBlocks();
+    showColumnBlocks();
 }
 
 var cursor = {
@@ -117,6 +119,7 @@ ui_canvas.addEventListener("mouseup", function(e) {
     clearShadedCellRow(cursor.r);
     drawShadedCellRow(cursor.r);
     computeColumnBlocks();
+    showColumnBlocks();
 });
 
 ui_canvas.addEventListener("mousemove", function(e) {
@@ -402,4 +405,24 @@ function computeColumnBlocks() {
         }
     }
 }              
- 
+
+function showColumnBlocks() {
+    canvas = document.getElementById('column-data');
+    if (canvas.getContext) {
+        ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.clearRect(0,0,ui_canvas.width, 200);
+        for (var i=0; i<gridSize; i++) {
+            var aColumn = columnData[i];
+            for (var j=0; j<aColumn.length; j++) {
+                ctx.font = "10px sans-serif";
+                ctx.fillText(
+                    aColumn[j],
+                    i*(blockDimension+gridPixels)+6,
+                    j*(blockDimension+gridPixels)+20
+                );
+            }
+        } 
+        ctx.restore();
+    }
+}
