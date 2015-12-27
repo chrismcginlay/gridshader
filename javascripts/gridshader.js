@@ -3,7 +3,8 @@ var gridSize = 25;          //number of blocks across and down in grid
 var gridPixels = 1;         //pixel width of gridlines
 // pixelWidth - linear number of pixels required to render grid
 var pixelWidth = blockDimension*gridSize+gridPixels*(gridSize+1);
-var gridShade = []; //[row,column] shading data
+var gridShade = []; //[row][column] current cell shading data organised by row
+var columnData = []; //[column][block] current block data organised by column
 var ui_canvas = document.getElementById('layer-ui');
 var cursorLineWidth = 3;
 
@@ -115,6 +116,7 @@ ui_canvas.addEventListener("mouseup", function(e) {
     }
     clearShadedCellRow(cursor.r);
     drawShadedCellRow(cursor.r);
+    computeColumnBlocks();
 });
 
 ui_canvas.addEventListener("mousemove", function(e) {
@@ -382,15 +384,17 @@ function drawShadedCells() {
 }
 
 function computeColumnBlocks() {
-    var columnData = [];
     // i iterates over columns, j over rows.
     // Cf. gridShade[r][c]
-    for (i=0; i<gridSize; i++) {
+    for (var i=0; i<gridSize; i++) {
         columnData[i] = [];
         var count = 0;
-        for(j=0; j<gridSize; j++) {
+        for(var j=0; j<gridSize; j++) {
             if (gridShade[j][i] == 1) {
                 count++;
+                if (j==gridSize-1) {
+                    columnData[i].push(count);
+                }
             } else if (count>0) {
                 columnData[i].push(count);
                 count = 0;
