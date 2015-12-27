@@ -8,17 +8,19 @@
 
   <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen">
   <link rel="stylesheet" href="stylesheets/github-dark.css">
+  <link rel="stylesheet" href="stylesheets/gridshader.css">
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script type="text/javascript" src="javascripts/script.js"></script>
+  <script type="text/javascript" src="javascripts/gridshader.js" async></script>
 
-  <title>GridShader</title>
+  <title>GridShader | GridShading Assistant</title>
   <meta name="description" content="Experiment with a grid-shading puzzle">
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
 </head>
 
-<body>
+<body onload="init()">
 
   <div class="wrapper">
     <header>
@@ -39,7 +41,15 @@
           <h3>
 <a id="welcome-to-gridshader" class="anchor" href="#welcome-to-gridshader" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to GridShader</h3>
 
-<p>This tool allows you to experiment with a grid-shading puzzle published by <a href="http://www.gchq.gov.uk/press_and_media/news_and_features/Pages/Directors-Christmas-puzzle-2015.aspx">GCHQ</a></p>
+<p>This tool allows you to experiment with a grid-shading puzzle published by <a href="http://www.gchq.gov.uk/press_and_media/news_and_features/Pages/Directors-Christmas-puzzle-2015.aspx">GCHQ</a>. Instructions are just below the grid.</p>
+
+<h3>
+<a id="the-gridshader" class="anchor" href="#the-gridshader" aria-hidden="true"><span class="octicon octicon-link"></span></a>The GridShader</h3>
+<div id="gridarea">
+  <canvas id="layer-ui" width="526" height="526"></canvas>
+  <canvas id="layer-blocks" width="526" height="526"></canvas>
+  <canvas id="layer-bg-grid" width="526" height="526"></canvas>
+</div>
 
 <h3>
 <a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it Works</h3>
@@ -55,6 +65,9 @@
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
 <p>The original puzzle was set in December 2015 by the director of GCHQ, Robert Hannigan.</p>
+<p>This GridShader tool is written using HTML5 Canvas + Javascript, by me, Chris McGinlay so that I could learn the basics of Canvas.</p>
+<p>The Time Machine GitHub pages theme was designed and developed by @jonrohan.</p>
+
         </article>
       </div>
     </div>
