@@ -41,6 +41,7 @@ function clearSquareAtRC(context, r, c) {
 function init() {
     loadBlockData();
     drawGrid();
+    drawConstrainedCells();
     drawShadedCells();
     cursor.draw(ui_ctx);
     computeColumnBlocks();
@@ -253,6 +254,55 @@ function findSpaceToRight() {
     return free_to_right;
 }
 
+function drawConstrainedCells() {
+    //The problem gives certain cells as definitely shaded.
+    //Specify them here as (r,c) pairs
+    var constrained = [
+        [3,3],
+        [3,4],
+        [3,12],
+        [3,13],
+        [3,21],
+        [8,6],
+        [8,7],
+        [8,10],
+        [8,14],
+        [8,15],
+        [8,18],
+        [16,6],
+        [16,11],
+        [16,16],
+        [16,20],
+        [21,3],
+        [21,4],
+        [21,9],
+        [21,10],
+        [21,15],
+        [21,20],
+        [21,21]
+    ];
+    canvas = document.getElementById('layer-bg-grid');
+    assert(canvas.width==pixelWidth,"Canvas has wrong width");
+    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+    if (canvas.getContext) {
+        ctx = canvas.getContext('2d');
+        var r=0; //row
+        var c=0; //column
+        for (i=0; i<constrained.length;i++) {
+            var cell = constrained[i];
+            r = cell[0];
+            c = cell[1];
+            var x = 0.5+(blockDimension+gridPixels)*c+4; //top left x-co-ord
+            var y = 0.5+(blockDimension+gridPixels)*r+4; //top left y-co-ord
+            ctx.fillRect(
+                x, y, 
+                (blockDimension+gridPixels)-8,
+                (blockDimension+gridPixels)-8
+            );
+        }
+    }
+}
+ 
 function loadBlockData() {
     //Load the initial sequence of horizontal consecutive squares
     //Place the blocks hard to the left, with an empty square between each.
@@ -411,7 +461,7 @@ function showColumnBlocks() {
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
         ctx.save();
-        ctx.clearRect(0,0,ui_canvas.width, 200);
+        ctx.clearRect(0,0,ui_canvas.width, 240);
         for (var i=0; i<gridSize; i++) {
             var aColumn = columnData[i];
             for (var j=0; j<aColumn.length; j++) {
