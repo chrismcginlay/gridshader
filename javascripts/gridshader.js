@@ -74,6 +74,7 @@ function init() {
     cursor.draw(ui_ctx);
     computeColumnBlocks();
     showColumnBlocks();
+    showColumnStatus();
 }
 
 var cursor = {
