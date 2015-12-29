@@ -8,6 +8,34 @@ var columnData = []; //[column][block] current block data organised by column
 var ui_canvas = document.getElementById('layer-ui');
 var cursorLineWidth = 3;
 
+var columnTarget = [
+    [7,2,1,1,7],
+    [1,1,2,2,1,1],
+    [1,3,1,3,1,3,1,3,1],
+    [1,3,1,1,5,1,3,1],
+    [1,3,1,1,4,1,3,1],
+    [1,1,1,2,1,1],
+    [7,1,1,1,1,1,7],
+    [1,1,3],
+    [2,1,2,1,8,2,1],
+    [2,2,1,2,1,1,1,2],
+    [1,7,3,2,1],
+    [1,2,3,1,1,1,1,1],
+    [4,1,1,2,6],
+    [3,3,1,1,1,3,1],
+    [1,2,5,2,2],
+    [2,2,1,1,1,1,1,2,1],
+    [1,3,3,2,1,8,1],
+    [6,2,1],
+    [7,1,4,1,1,3],
+    [1,1,1,1,4],
+    [1,3,1,3,7,1],
+    [1,3,1,1,1,2,1,1,4],
+    [1,3,1,4,3,3],
+    [1,1,2,2,2,6,1],
+    [7,1,3,2,1,1]
+];
+
 assert(ui_canvas.width==pixelWidth,"Canvas has wrong width");
 assert(ui_canvas.height==pixelWidth, "Canvas has wrong height");
 if (ui_canvas.getContext) {
@@ -121,6 +149,7 @@ ui_canvas.addEventListener("mouseup", function(e) {
     drawShadedCellRow(cursor.r);
     computeColumnBlocks();
     showColumnBlocks();
+    showColumnStatus();
 });
 
 ui_canvas.addEventListener("mousemove", function(e) {
@@ -469,10 +498,47 @@ function showColumnBlocks() {
                 ctx.fillText(
                     aColumn[j],
                     i*(blockDimension+gridPixels)+6,
-                    j*(blockDimension+gridPixels)+20
+                    j*(blockDimension+gridPixels)+30
                 );
             }
         } 
+        ctx.restore();
+    }
+}
+
+function showColumnStatus() {
+    //if a column has the correct sequence of blocks, show a green circle
+    //otherwise red
+    canvas = document.getElementById('column-data');
+    var green_flag = null;
+    var userColumn = null;
+    var targetColumn = null;
+    if (canvas.getContext) {
+        ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.clearRect(0,0,ui_canvas.width, 20);
+        for (var i=0; i<gridSize; i++) {
+            green_flag=true;
+            userColumn = columnData[i];
+            targetColumn = columnTarget[i];
+            if (userColumn.length == targetColumn.length) {
+                for (var j=0; j<userColumn.length; j++) {
+                    //compare elements of columnData and columnTarget
+                    if (userColumn[j] != targetColumn[j]) {
+                        green_flag = false;
+                    }
+                }
+            } else green_flag = false;
+           
+            ctx.beginPath(); 
+            ctx.arc(
+                i*(blockDimension+gridPixels)+10,
+                10, 8, 0, 2*Math.PI
+            );
+            ctx.fillStyle = (green_flag ? "green" : "red");
+            ctx.closePath();
+            ctx.fill();
+        }
         ctx.restore();
     }
 }
