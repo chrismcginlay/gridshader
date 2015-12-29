@@ -69,6 +69,7 @@ function clearSquareAtRC(context, r, c) {
 function init() {
     loadBlockData();
     drawGrid();
+    showTargetColumnBlocks();
     drawConstrainedCells();
     drawShadedCells();
     cursor.draw(ui_ctx);
@@ -316,6 +317,7 @@ function drawConstrainedCells() {
     assert(canvas.height==pixelWidth, "Canvas has wrong height");
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
+        ctx.save();
         var r=0; //row
         var c=0; //column
         for (i=0; i<constrained.length;i++) {
@@ -324,12 +326,36 @@ function drawConstrainedCells() {
             c = cell[1];
             var x = 0.5+(blockDimension+gridPixels)*c+4; //top left x-co-ord
             var y = 0.5+(blockDimension+gridPixels)*r+4; //top left y-co-ord
+            ctx.fillStyle = "rgba(0,0,0,0.6)";
             ctx.fillRect(
                 x, y, 
                 (blockDimension+gridPixels)-8,
                 (blockDimension+gridPixels)-8
             );
         }
+        ctx.restore();
+    }
+}
+
+function showTargetColumnBlocks() {
+    //Show the user the desired sequence of contiguous blocks in each column
+    canvas = document.getElementById('layer-bg-grid');
+    if (canvas.getContext) {
+        ctx = canvas.getContext('2d');
+        ctx.save();
+        for (var i=0; i<gridSize; i++) {
+            var aColumn = columnTarget[i];
+            for (var j=0; j<aColumn.length; j++) {
+                ctx.font = "10px sans-serif";
+                ctx.fillStyle = "blue";
+                ctx.fillText(
+                    aColumn[j],
+                    i*(blockDimension+gridPixels)+7,
+                    j*(blockDimension+gridPixels)+204
+                );
+            }
+        } 
+        ctx.restore();
     }
 }
  
