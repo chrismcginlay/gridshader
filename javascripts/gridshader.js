@@ -5,7 +5,6 @@ var gridPixels = 1;         //pixel width of gridlines
 var pixelWidth = blockDimension*gridSize+gridPixels*(gridSize+1);
 var gridShade = []; //[row][column] current cell shading data organised by row
 var columnData = []; //[column][block] current block data organised by column
-var ui_canvas = document.getElementById('layer-ui');
 var cursorLineWidth = 3;
 
 var columnTarget = [
@@ -36,11 +35,24 @@ var columnTarget = [
     [7,1,3,2,1,1]
 ];
 
+var ui_canvas = document.getElementById('layer-ui');
 assert(ui_canvas.width==pixelWidth,"Canvas has wrong width");
 assert(ui_canvas.height==pixelWidth, "Canvas has wrong height");
 if (ui_canvas.getContext) {
     var ui_ctx = ui_canvas.getContext('2d');
 }
+
+//Event listeners for mouse
+ui_canvas.addEventListener("mousedown", handleMouseDown, false);
+ui_canvas.addEventListener("mouseout", handleMouseOut, false);
+ui_canvas.addEventListener("mouseup", handleMouseUp, false);
+ui_canvas.addEventListener("mousemove", handleMouseMove, false);
+
+//Event listeners for touch
+ui_canvas.addEventListener("touchstart", handleTouchStart, false);
+ui_canvas.addEventListener("touchcancel", handleTouchCancel, false);
+ui_canvas.addEventListener("touchend", handleTouchEnd, false);
+ui_canvas.addEventListener("touchmove", handleTouchMove, false);
 
 function assert(condition, message) {
     if (!condition) {
@@ -50,20 +62,6 @@ function assert(condition, message) {
         }
         throw message;
     }
-}
-
-function fillSquareAtRC(context, r, c) {
-    //Shade square at row=r, column=c
-    var x = 0.5+(blockDimension+gridPixels)*c; //top left x-co-ord
-    var y = 0.5+(blockDimension+gridPixels)*r; //top left y-co-ord
-    context.fillRect(x, y, blockDimension+0.5, blockDimension+0.5);
-}
-
-function clearSquareAtRC(context, r, c) {
-    //clear square at row=r, column=c
-    var x = 0.5+(blockDimension+gridPixels)*c; //top left x-co-ord
-    var y = 0.5+(blockDimension+gridPixels)*r; //top left y-co-ord
-    context.clearRect(x, y, blockDimension+0.5, blockDimension+0.5);
 }
 
 function init() {
@@ -111,7 +109,10 @@ var cursor = {
     }
 }
 
-ui_canvas.addEventListener("mousedown", function(e) {
+//
+//Mouse handlers
+//
+function handleMouseDown(e) {
     var x = e.clientX;
     var y = e.clientY;
     var boundary = this.getBoundingClientRect();
@@ -129,14 +130,14 @@ ui_canvas.addEventListener("mousedown", function(e) {
     ui_ctx.lineWidth = cursorLineWidth;
     cursor.draw(ui_ctx);
     ctx.restore();
-});
+}
 
-ui_canvas.addEventListener("mouseout", function(e) {
+function handleMouseOut(e) {
     cursor.dragging = false;
     cursor.draw(ui_ctx);
-});
+}
 
-ui_canvas.addEventListener("mouseup", function(e) {
+function handleMouseUp(e) {
     if (!cursor.dragging) {
         return;
     }
@@ -152,9 +153,9 @@ ui_canvas.addEventListener("mouseup", function(e) {
     computeColumnBlocks();
     showColumnBlocks();
     showColumnStatus();
-});
+}
 
-ui_canvas.addEventListener("mousemove", function(e) {
+function handleMouseMove(e) {
     if (cursor.dragging) {
         var x = e.clientX;
         var y = e.clientY;
@@ -172,8 +173,83 @@ ui_canvas.addEventListener("mousemove", function(e) {
         cursor.draw(ui_ctx);
         ui_ctx.restore();
     }
-});
+}
 
+//
+//Touch handlers
+//
+function handleTouchStart(e) {
+    e.preventDefault();
+    var touch = e.changedTouches[0];
+    var x = touch.clientX;
+    var y = touch.clientY;
+    var boundary = this.getBoundingClientRect();
+    cursor.clear(ui_ctx);   //clear old cursor
+    var c = x2c(x);
+    var r = y2r(y);
+    findCursorStart(r,c);
+    cursor.c_old = cursor.c;    //record start of this block
+    findCursorLength();
+    cursor.dragging = (gridShade[r][c] == 1); 
+    cursor.dragLimitLow = cursor.c - findSpaceToLeft(); //no further left
+    cursor.dragLimitHigh = cursor.c + findSpaceToRight(); //no further right
+    ui_ctx.save();
+    ui_ctx.strokeStyle = 'rgb(0,100,100)';
+    ui_ctx.lineWidth = cursorLineWidth;
+    cursor.draw(ui_ctx);
+    ctx.restore();
+}
+
+function handleTouchCancel(e) {
+    e.preventDefault();
+    cursor.dragging = false;
+    cursor.draw(ui_ctx);
+}
+
+function handleTouchEnd(e) {
+    e.preventDefault();
+    if (!cursor.dragging) {
+        return;
+    }
+    cursor.dragging = false;
+    for (var i=0; i<cursor.length; i++) {
+        gridShade[cursor.r][cursor.c_old+i] = 0;
+    }
+    for (var i=0; i<cursor.length; i++) {
+        gridShade[cursor.r][cursor.c+i] = 1;
+    }
+    clearShadedCellRow(cursor.r);
+    drawShadedCellRow(cursor.r);
+    computeColumnBlocks();
+    showColumnBlocks();
+    showColumnStatus();
+}
+
+function handleTouchMove(e) {
+    if (cursor.dragging) {
+        e.preventDefault();
+        touch = e.changedTouches[0];
+        var x = touch.clientX;
+        var y = touch.clientY;
+        var boundary = this.getBoundingClientRect();
+        cursor.clear(ui_ctx);   //clear old cursor
+        var c = x2c(x);
+        //Allow block drag, but avoid adjacent blocks
+        cursor.c = Math.min(
+            cursor.dragLimitHigh, Math.max(cursor.dragLimitLow, c));
+        //cursor.r is fixed. Makes no sense to drag up/down
+        //var r = y2r(y);
+        ui_ctx.save();
+        ui_ctx.strokeStyle = 'rgb(150,0,0)';
+        ui_ctx.lineWidth = cursorLineWidth;
+        cursor.draw(ui_ctx);
+        ui_ctx.restore();
+    }
+}
+
+//
+//Co-ordinate transform utilities
+//
 function x2c(x) {
     //Convert window (x,-) to grid (-,column).
     var canvas_boundary = ui_canvas.getBoundingClientRect();
@@ -189,7 +265,10 @@ function y2r(y) {
         ((y-canvas_boundary.top)/(blockDimension+gridPixels));
     return row;
 }
-    
+ 
+//
+//Block and cursor utilities
+//  
 function findCursorStart(r,c) {
     var current_column = c;
     cursor.r = r;
@@ -283,6 +362,23 @@ function findSpaceToRight() {
         }
     }
     return free_to_right;
+}
+
+//
+//Drawing routines
+//
+function fillSquareAtRC(context, r, c) {
+    //Shade square at row=r, column=c
+    var x = 0.5+(blockDimension+gridPixels)*c; //top left x-co-ord
+    var y = 0.5+(blockDimension+gridPixels)*r; //top left y-co-ord
+    context.fillRect(x, y, blockDimension+0.5, blockDimension+0.5);
+}
+
+function clearSquareAtRC(context, r, c) {
+    //clear square at row=r, column=c
+    var x = 0.5+(blockDimension+gridPixels)*c; //top left x-co-ord
+    var y = 0.5+(blockDimension+gridPixels)*r; //top left y-co-ord
+    context.clearRect(x, y, blockDimension+0.5, blockDimension+0.5);
 }
 
 function drawConstrainedCells() {
