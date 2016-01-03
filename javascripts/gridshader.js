@@ -36,8 +36,8 @@ var columnTarget = [
 ];
 
 var ui_canvas = document.getElementById('layer-ui');
-assert(ui_canvas.width==pixelWidth,"Canvas has wrong width");
-assert(ui_canvas.height==pixelWidth, "Canvas has wrong height");
+assert(ui_canvas.width===pixelWidth,"Canvas has wrong width");
+assert(ui_canvas.height===pixelWidth, "Canvas has wrong height");
 if (ui_canvas.getContext) {
     var ui_ctx = ui_canvas.getContext('2d');
 }
@@ -122,7 +122,7 @@ function handleMouseDown(e) {
     findCursorStart(r,c);
     cursor.c_old = cursor.c;    //record start of this block
     findCursorLength();
-    cursor.dragging = (gridShade[r][c] == 1); 
+    cursor.dragging = (gridShade[r][c] === 1); 
     cursor.dragLimitLow = cursor.c - findSpaceToLeft(); //no further left
     cursor.dragLimitHigh = cursor.c + findSpaceToRight(); //no further right
     ui_ctx.save();
@@ -190,7 +190,7 @@ function handleTouchStart(e) {
     findCursorStart(r,c);
     cursor.c_old = cursor.c;    //record start of this block
     findCursorLength();
-    cursor.dragging = (gridShade[r][c] == 1); 
+    cursor.dragging = (gridShade[r][c] === 1); 
     cursor.dragLimitLow = cursor.c - findSpaceToLeft(); //no further left
     cursor.dragLimitHigh = cursor.c + findSpaceToRight(); //no further right
     ui_ctx.save();
@@ -274,18 +274,18 @@ function findCursorStart(r,c) {
     cursor.r = r;
 
     var test = gridShade[1][2];
-    if (current_column==0) { 
+    if (current_column===0) { 
         cursor.c = current_column;
         return;
     }
-    if (gridShade[cursor.r][current_column] == 0) {
+    if (gridShade[cursor.r][current_column] === 0) {
         //we aren't on a shaded cell
         cursor.c = current_column;
     } else {
         while (current_column>0) {
-            if (gridShade[cursor.r][current_column-1] == 1) {
+            if (gridShade[cursor.r][current_column-1] === 1) {
                 current_column -= 1;
-                if (current_column==0) {
+                if (current_column===0) {
                     cursor.c = current_column;
                     break;
                 }
@@ -299,7 +299,7 @@ function findCursorStart(r,c) {
 
 function findCursorLength() {
     //Assumes cursor is placed at block start (per findCursorStart)
-    if (gridShade[cursor.r][cursor.c] == 0) {
+    if (gridShade[cursor.r][cursor.c] === 0) {
         cursor.length = 1; //Just whitespace, not a block
         return;
     }
@@ -307,7 +307,7 @@ function findCursorLength() {
     var cl = 0;
     var column_to_test = cursor.c;
     do {
-        if (gridShade[cursor.r][column_to_test] == 1) {
+        if (gridShade[cursor.r][column_to_test] === 1) {
             cl++;
             column_to_test++;
         } else break;
@@ -324,15 +324,15 @@ function findSpaceToLeft() {
         while (test_column>=1) {
             var one_left = gridShade[cursor.r][test_column];
             var two_left = gridShade[cursor.r][test_column-1];
-            if (one_left == 0 && two_left ==0) {
+            if (one_left === 0 && two_left ===0) {
                 free_to_left++;
             } else {
                 break;
             }
             test_column--;
         }
-        if (test_column==0) {
-            if (gridShade[cursor.r][test_column]==0) {
+        if (test_column===0) {
+            if (gridShade[cursor.r][test_column]===0) {
                 free_to_left++;
             }
         }
@@ -348,15 +348,15 @@ function findSpaceToRight() {
         while (test_column<24) {
             var one_right = gridShade[cursor.r][test_column];
             var two_right = gridShade[cursor.r][test_column+1];
-            if (one_right == 0 && two_right ==0) {
+            if (one_right === 0 && two_right ===0) {
                 free_to_right++;
             } else {
                 break;
             }
             test_column++;
         }
-        if (test_column==24) {
-            if (gridShade[cursor.r][test_column]==0) {
+        if (test_column===24) {
+            if (gridShade[cursor.r][test_column]===0) {
                 free_to_right++;
             }
         }
@@ -409,8 +409,8 @@ function drawConstrainedCells() {
         [21,21]
     ];
     canvas = document.getElementById('layer-bg-grid');
-    assert(canvas.width==pixelWidth,"Canvas has wrong width");
-    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+    assert(canvas.width===pixelWidth,"Canvas has wrong width");
+    assert(canvas.height===pixelWidth, "Canvas has wrong height");
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
         ctx.save();
@@ -516,8 +516,8 @@ function loadBlockData() {
 
 function drawGrid() {
     canvas = document.getElementById('layer-bg-grid');
-    assert(canvas.width==pixelWidth,"Canvas has wrong width");
-    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+    assert(canvas.width===pixelWidth,"Canvas has wrong width");
+    assert(canvas.height===pixelWidth, "Canvas has wrong height");
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
 
@@ -536,15 +536,15 @@ function drawGrid() {
 
 function drawShadedCellRow(r) {
     canvas = document.getElementById('layer-blocks');
-    assert(canvas.width==pixelWidth,"Canvas has wrong width");
-    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+    assert(canvas.width===pixelWidth,"Canvas has wrong width");
+    assert(canvas.height===pixelWidth, "Canvas has wrong height");
 
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
         ctx.save();
         ctx.fillStyle = 'rgba(200,0,200,0.5)';
         for (var j=0; j<gridSize; j++) {
-            if (gridShade[r][j]==1) {
+            if (gridShade[r][j]===1) {
                 fillSquareAtRC(ctx, r, j);
             }
         }
@@ -554,8 +554,8 @@ function drawShadedCellRow(r) {
 
 function clearShadedCellRow(r) {
     canvas = document.getElementById('layer-blocks');
-    assert(canvas.width==pixelWidth,"Canvas has wrong width");
-    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+    assert(canvas.width===pixelWidth,"Canvas has wrong width");
+    assert(canvas.height===pixelWidth, "Canvas has wrong height");
 
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
@@ -569,8 +569,8 @@ function drawShadedCells() {
     //using gridShade array, draw the pattern of squares, thus showing blocks
 
     canvas = document.getElementById('layer-blocks');
-    assert(canvas.width==pixelWidth,"Canvas has wrong width");
-    assert(canvas.height==pixelWidth, "Canvas has wrong height");
+    assert(canvas.width===pixelWidth,"Canvas has wrong width");
+    assert(canvas.height===pixelWidth, "Canvas has wrong height");
 
     if (canvas.getContext) {
         ctx = canvas.getContext('2d');
@@ -579,7 +579,7 @@ function drawShadedCells() {
         for (var i=0; i<gridSize; i++) {
             for (var j=0; j<gridSize; j++) {
                 //console.log(i,j,gridShade[i][j]);
-                if (gridShade[i][j]==1) {
+                if (gridShade[i][j]===1) {
                     fillSquareAtRC(ctx, i, j);
                 }
             }
@@ -595,9 +595,9 @@ function computeColumnBlocks() {
         columnData[i] = [];
         var count = 0;
         for(var j=0; j<gridSize; j++) {
-            if (gridShade[j][i] == 1) {
+            if (gridShade[j][i] === 1) {
                 count++;
-                if (j==gridSize-1) {
+                if (j===gridSize-1) {
                     columnData[i].push(count);
                 }
             } else if (count>0) {
@@ -644,10 +644,10 @@ function showColumnStatus() {
             green_flag=true;
             userColumn = columnData[i];
             targetColumn = columnTarget[i];
-            if (userColumn.length == targetColumn.length) {
+            if (userColumn.length === targetColumn.length) {
                 for (var j=0; j<userColumn.length; j++) {
                     //compare elements of columnData and columnTarget
-                    if (userColumn[j] != targetColumn[j]) {
+                    if (userColumn[j] !== targetColumn[j]) {
                         green_flag = false;
                     }
                 }
